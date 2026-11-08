@@ -1,31 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Saryu Flood Guard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saryu Flood Guard - Ayodhya</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-body{font-family:Arial; background:#e0f2fe; margin:0; padding:20px; text-align:center}
-.box{background:white; padding:20px; border-radius:15px; max-width:600px; margin:auto}
-h1{color:#0369a1}
-.alert{background:#dc2626; color:white; padding:15px; border-radius:10px; font-weight:bold}
-.safe{background:#16a34a; color:white; padding:15px; border-radius:10px; margin-top:10px}
-button{background:#0369a1; color:white; padding:12px 20px; border:none; border-radius:8px; font-size:16px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0f172a;color:white}
+.header{background:linear-gradient(90deg,#0369a1,#0ea5e9);padding:20px;text-align:center}
+.header h1{font-size:28px}.header p{opacity:.9;margin-top:5px}
+.cards{display:flex;gap:15px;flex-wrap:wrap;justify-content:center;padding:20px}
+.card{background:#1e293b;border-radius:15px;padding:20px;min-width:200px;text-align:center;flex:1}
+.card h3{color:#94a3b8;font-size:14px}.card h2{font-size:32px;margin:10px 0}
+.red{color:#f87171}.yellow{color:#facc15}.green{color:#4ade80}
+.section{background:#1e293b;margin:0 20px 20px;border-radius:15px;padding:20px}
+#map{height:350px;border-radius:12px;width:100%}
+.alert{background:#7f1d1d;border:1px solid #ef4444;padding:15px;border-radius:12px;margin:0 20px 20px}
+.btn{display:inline-block;background:#0ea5e9;color:white;padding:12px 25px;border-radius:10px;text-decoration:none;font-weight:bold;margin-top:10px}
+.footer{text-align:center;padding:20px;color:#94a3b8}
 </style>
 </head>
 <body>
-<div class="box">
-<h1>Saryu Flood Guard</h1>
-<p>Ayodhya - Saryu River Flood Early Warning System<br>Using NASA SAR Satellite Data</p>
-<h2>Current Water Level: 91.2m</h2>
-<div class="alert">WARNING: Water Level Rising - Be Alert</div>
-<div class="safe">SAR Data: Flood Area Detected Near Guptar Ghat</div>
-<br>
-<h3>How it Works?</h3>
-<p>1. SAR Satellite takes image of Saryu River even in clouds & night<br>
-2. Our AI compares old & new images<br>
-3. If water increases, alert sent to villagers via SMS</p>
-<br>
-<button onclick="alert('Alert Sent to Ayodhya District Admin!')">Send Alert Test</button>
-<p><br>Made by Team Saryu Flood Guard<br>NASA Space Apps Challenge 2026</p>
+<div class="header">
+<h1>🌊 Saryu Flood Guard - Ayodhya</h1>
+<p>NASA Space Apps Challenge 2026 | Live Flood Early Warning System</p>
+<p>📍 Saryu River, Ayodhya, Uttar Pradesh</p>
 </div>
+
+<div class="alert">⚠️ <b>WARNING:</b> Water Level Rising - Be Alert. Current Level 91.2m, Danger Level 92.5m. Stay away from river ghats.</div>
+
+<div class="cards">
+<div class="card"><h3>CURRENT WATER LEVEL</h3><h2 class="yellow">91.2m</h2><p>▲ +0.4m in last 6 hrs</p></div>
+<div class="card"><h3>DANGER LEVEL</h3><h2 class="red">92.5m</h2><p>1.3m remaining</p></div>
+<div class="card"><h3>RAINFALL (24H)</h3><h2>42mm</h2><p>Heavy Rain in Ayodhya</p></div>
+<div class="card"><h3>STATUS</h3><h2 class="yellow">WARNING</h2><p>Be Prepared</p></div>
+</div>
+
+<div class="section">
+<h2>📍 Live Flood Map - Ayodhya</h2>
+<p style="margin:10px 0;color:#94a3b8">Red = Danger Zone, Blue = Saryu River, Green = Safe Shelter</p>
+<div id="map"></div>
+</div>
+
+<div class="section">
+<h2>📈 Water Level - Last 7 Days Chart</h2>
+<canvas id="myChart" height="120"></canvas>
+</div>
+
+<div class="section">
+<h2>🏠 Safe Shelters in Ayodhya</h2>
+<p>✅ 1. Govt Inter College, Ayodhya - 500 People Capacity<br>
+✅ 2. Ram Katha Park Hall<br>
+✅ 3. Community Hall, Naya Ghat<br>
+✅ Emergency Number: <b>112</b> | Flood Helpline: <b>1077</b></p>
+<a class="btn" href="https://isumit7275-hash.github.io/saryu-flood-guard/">🔄 Refresh Data</a>
+</div>
+
+<div class="footer">Made by Sumit | Data: CWC + NASA GPM Satellite (Demo Data) | For NASA Space Apps 2026</div>
+
+<script>
+var map = L.map('map').setView([26.795, 82.194], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+L.marker([26.795, 82.194]).addTo(map).bindPopup("<b>Ayodhya City</b><br>Water Level: 91.2m").openPopup();
+L.marker([26.799, 82.20]).addTo(map).bindPopup("<b>Ram Ki Paidi Ghat</b><br>⚠️ High Risk Zone");
+L.marker([26.78, 82.18]).addTo(map).bindPopup("<b>Safe Shelter - Govt Inter College</b>");
+L.circle([26.799, 82.20], {color:'red',fillColor:'#f03',fillOpacity:0.4,radius:1500}).addTo(map);
+L.polyline([[26.82,82.15],[26.80,82.19],[26.78,82.22],[26.76,82.25]],{color:'blue',weight:5}).addTo(map).bindPopup("Saryu River");
+</script>
+
+<script>
+const ctx = document.getElementById('myChart');
+new Chart(ctx, {type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Today'],datasets:[{label:'Water Level (m)',data:[89.2,89.8,90.1,90.5,90.8,91.0,91.2],borderColor:'#0ea5e9',backgroundColor:'rgba(14,165,233,0.2)',fill:true,tension:0.4},{label:'Danger Level (92.5m)',data:[92.5,92.5,92.5,92.5,92.5,92.5,92.5],borderColor:'#ef4444',borderDash:[5,5],fill:false}]},options:{scales:{y:{min:88,max:94}}}});
+</script>
 </body>
 </html>
